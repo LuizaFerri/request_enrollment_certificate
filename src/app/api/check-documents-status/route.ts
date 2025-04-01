@@ -72,6 +72,8 @@ export async function POST(request: NextRequest) {
         docsStatus.isApproved = false;
         docsStatus.missingDocs.push(reqDoc.name);
         console.log(`Documento faltando: ${reqDoc.name}`);
+      } else if (userDoc.status_id === APPROVED) {
+        console.log(`Documento aprovado: ${userDoc.document_name}`);
       } else if (userDoc.status_id === PENDING) {
         docsStatus.isApproved = false;
         docsStatus.hasPending = true;

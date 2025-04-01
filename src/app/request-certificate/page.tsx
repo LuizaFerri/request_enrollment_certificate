@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import TurmaSelector from '@/components/TurmaSelector';
 import { Turma, DocumentStatus, CertificateRequestData } from '@/lib/types';
 
-export default function RequestCertificate() {
+function RequestCertificateContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email');
@@ -496,5 +496,13 @@ export default function RequestCertificate() {
         <Link href="/" className="back-link">Voltar para o início</Link>
       </div>
     </div>
+  );
+}
+
+export default function RequestCertificate() {
+  return (
+    <Suspense fallback={<div className="section-loading">Carregando...</div>}>
+      <RequestCertificateContent />
+    </Suspense>
   );
 } 

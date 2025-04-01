@@ -49,11 +49,11 @@ export default function TurmaSelector({ email, onTurmaSelect, selectedTurmaId }:
 
         setTurmas(data.turmas);
         
-        const uniqueCursos = [...new Set(data.turmas.map((turma: Turma) => turma.course))];
+        const uniqueCursos = [...new Set(data.turmas.map((turma: Turma) => turma.course))] as string[];
         setCursos(uniqueCursos);
         
         if (uniqueCursos.length === 1) {
-          setSelectedCurso(uniqueCursos[0]);
+          setSelectedCurso(uniqueCursos[0] as string);
         }
         
         if (data.turmas.length === 1 && !selectedTurmaId) {
@@ -76,7 +76,7 @@ export default function TurmaSelector({ email, onTurmaSelect, selectedTurmaId }:
     setSelectedCurso(curso);
     
     if (selectedTurmaId) {
-      onTurmaSelect(null as any);
+      onTurmaSelect(null as unknown as Turma);
     }
   };
 
