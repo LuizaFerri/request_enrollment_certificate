@@ -14,34 +14,37 @@ export async function POST(request: NextRequest) {
 
     const result = await query(
       `SELECT DISTINCT
-         t.id, 
-         t.name, 
-         t.course, 
-         r.enrollment as enrollment_id
-       FROM 
-         turma t
-       JOIN 
-         register r ON r.turma = t.id
-       JOIN 
-         enrollment e ON e.id = r.enrollment
-       JOIN 
-         person p ON p.email = e.email
-       WHERE 
-         p.email = $1 
-         AND p.excluded = false 
-         AND r.is_student = true
-         AND r.cancelled = false
-         AND r.deleted_at IS NULL
-         AND e.deleted_at IS NULL 
-         AND t.deleted_at IS NULL
-         AND (t.name LIKE '%2025%' OR t.course LIKE '%2025%')
-       ORDER BY 
-         t.course ASC, t.name ASC`,
+        t.id,
+        t.name,
+        t.course,
+        t.duracao_meses,
+        t.ordem_modulo as periodo,
+        t.data_inicio,
+        r.enrollment as enrollment_id
+      FROM turma t
+      JOIN register r ON r.turma = t.id
+      JOIN enrollment e ON e.id = r.enrollment
+      WHERE e.email = $1
+      AND t.deleted_at IS NULL
+      AND r.is_student = true
+      AND r.cancelled = false
+      AND r.deleted_at IS NULL
+      ORDER BY t.name`,
       [email]
     );
 
+    const turmas = result.rows.map(turma => ({
+      id: turma.id,
+      name: turma.name,
+      course: turma.course,
+      enrollment_id: turma.enrollment_id,
+      duracao_meses: turma.duracao_meses,
+      periodo: turma.periodo?.toString(),
+      data_inicio: turma.data_inicio
+    }));
+
     return NextResponse.json({ 
-      turmas: result.rows
+      turmas: turmas
     });
   } catch (error) {
     console.error('Erro ao buscar turmas:', error);

@@ -1,4 +1,3 @@
-
 export interface Student {
   id: number;
   first_name: string;
@@ -27,6 +26,9 @@ export interface Turma {
   name: string;
   course: string;
   enrollment_id: number;
+  duracao_meses: number;
+  periodo: string;
+  data_inicio: Date;
 }
 
 export interface DocumentStatus {
@@ -58,6 +60,11 @@ export interface CertificateRequestData {
   course: string;
   turma: string;
   requestDate: Date;
+  turmaInfo: {
+    periodo: string;
+    data_inicio: Date;
+    duracao_meses: number;
+  };
 }
 
 export interface CertificateRequest {

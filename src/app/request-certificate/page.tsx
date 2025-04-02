@@ -178,7 +178,12 @@ function RequestCertificateContent() {
         additionalNotes: formData.additionalNotes,
         course: selectedTurma.course,
         turma: selectedTurma.name,
-        requestDate: new Date()
+        requestDate: new Date(),
+        turmaInfo: {
+          periodo: selectedTurma.periodo,
+          data_inicio: selectedTurma.data_inicio,
+          duracao_meses: selectedTurma.duracao_meses
+        }
       };
 
       const response = await fetch('/api/request-certificate', {
@@ -422,21 +427,6 @@ function RequestCertificateContent() {
                 onChange={handleInputChange}
                 required
               />
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="courseModality">Em qual modalidade você iniciou o curso?</label>
-              <select
-                id="courseModality"
-                name="courseModality"
-                value={formData.courseModality}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">-- Selecione --</option>
-                <option value="formacao">Formação</option>
-                <option value="especializacao">Especialização</option>
-              </select>
             </div>
             
             <div className="form-group">
