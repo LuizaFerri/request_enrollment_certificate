@@ -3,9 +3,9 @@ import { query } from "@/lib/db";
 import { CertificateRequestData } from "@/lib/types";
 import nodemailer from "nodemailer";
 
-const EMAIL_TO = "luiza@ceconte.com.br";
-const EMAIL_USER = "suporte-ti@ceconte.com.br";
-const EMAIL_PASSWORD = "rhjs pcks kcxb hwxj";
+const EMAIL_TO = process.env.EMAIL_TO;
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -32,12 +32,12 @@ export async function POST(request: NextRequest) {
       additionalNotes,
       course,
       turma,
-      turmaInfo,
+      turmaInfo
     } = requestData;
 
     if (!studentId || !email || !turmaId) {
       return NextResponse.json(
-        { error: "Dados incompletos para a solicitação" },
+        { error: 'Dados incompletos para a solicitação' },
         { status: 400 }
       );
     }
@@ -55,12 +55,10 @@ export async function POST(request: NextRequest) {
     );
 
     if (existingRequest.rows.length > 0) {
-      const requestDate = new Date(
-        existingRequest.rows[0].request_date
-      ).toLocaleDateString("pt-BR");
+      const requestDate = new Date(existingRequest.rows[0].request_date).toLocaleDateString('pt-BR');
       return NextResponse.json(
-        {
-          error: `Você já possui uma solicitação em andamento para esta turma (solicitada em ${requestDate}). Por favor, aguarde o processamento ou entre em contato com a secretaria.`,
+        { 
+          error: `Você já possui uma solicitação em andamento para esta turma (solicitada em ${requestDate}). Por favor, aguarde o processamento ou entre em contato com a secretaria.` 
         },
         { status: 400 }
       );
@@ -84,7 +82,7 @@ export async function POST(request: NextRequest) {
 
     if (verifyEnrollment.rows.length === 0) {
       return NextResponse.json(
-        { error: "Aluno não está matriculado na turma selecionada" },
+        { error: 'Aluno não está matriculado na turma selecionada' },
         { status: 400 }
       );
     }
@@ -99,22 +97,24 @@ export async function POST(request: NextRequest) {
          rg,
          cpf,
          purpose,
-          additional_notes,
-         request_date, 
+         course_modality,
+         additional_notes,
+         request_date,
          status
        )
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), 'pending')
        RETURNING id`,
       [
-        studentId,
-        email,
-        turmaId,
+        studentId, 
+        email, 
+        turmaId, 
         fullName,
-        phoneNumber,
-        rg,
-        cpf,
+        phoneNumber || '',
+        rg || '',
+        cpf || '',
         purpose,
-        additionalNotes || "",
+        course.startsWith('Especialização') ? 'especializacao' : 'formacao',
+        additionalNotes || ''
       ]
     );
 
@@ -128,8 +128,7 @@ export async function POST(request: NextRequest) {
       [turmaId, email]
     );
 
-    const enrollmentId =
-      enrollmentResult.rows.length > 0 ? enrollmentResult.rows[0].id : null;
+    const enrollmentId = enrollmentResult.rows.length > 0 ? enrollmentResult.rows[0].id : null;
 
     await sendEmailToSecretary({
       requestId,
@@ -140,24 +139,24 @@ export async function POST(request: NextRequest) {
       rg,
       cpf,
       purpose,
-      additionalNotes: additionalNotes || "",
+      additionalNotes: additionalNotes || '',
       course,
       turma,
       turmaId,
       enrollmentId,
       fetchAttachments: true,
-      turmaInfo,
+      turmaInfo
     });
 
     return NextResponse.json({
       success: true,
       requestId,
-      message: "Solicitação de declaração de matrícula enviada com sucesso",
+      message: 'Solicitação de declaração de matrícula enviada com sucesso'
     });
   } catch (error) {
-    console.error("Erro ao solicitar declaração:", error);
+    console.error('Erro ao solicitar declaração:', error);
     return NextResponse.json(
-      { error: "Erro ao processar a solicitação" },
+      { error: 'Erro ao processar a solicitação' },
       { status: 500 }
     );
   }
@@ -182,11 +181,6 @@ interface EmailData {
     periodo?: string;
     data_inicio?: Date;
     duracao_meses?: number;
-    ciclo?: {
-      data_inicio: Date;
-      duracao_meses: number;
-      primeira_turma: string;
-    };
   };
 }
 
