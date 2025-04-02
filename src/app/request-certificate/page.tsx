@@ -36,7 +36,6 @@ function RequestCertificateContent() {
     rg: '',
     cpf: '',
     purpose: '',
-    courseModality: '',
     additionalNotes: ''
   });
 
@@ -107,7 +106,6 @@ function RequestCertificateContent() {
           rg: data.studentInfo.rg,
           cpf: data.studentInfo.cpf,
           purpose: '',
-          courseModality: '',
           additionalNotes: ''
         });
       } catch (err) {
@@ -157,7 +155,7 @@ function RequestCertificateContent() {
 
     // Validar campos obrigatórios
     if (!formData.fullName || !formData.phoneNumber || !formData.rg || 
-        !formData.cpf || !formData.purpose || !formData.courseModality) {
+        !formData.cpf || !formData.purpose) {
       setError('Por favor, preencha todos os campos obrigatórios');
       return;
     }
@@ -174,7 +172,6 @@ function RequestCertificateContent() {
         rg: formData.rg,
         cpf: formData.cpf,
         purpose: formData.purpose,
-        courseModality: formData.courseModality as 'formacao' | 'especializacao',
         additionalNotes: formData.additionalNotes,
         course: selectedTurma.course,
         turma: selectedTurma.name,
@@ -460,7 +457,7 @@ function RequestCertificateContent() {
               !selectedTurma || 
               (documentStatus ? !documentStatus.isApproved : false) ||
               (!formData.fullName || !formData.phoneNumber || !formData.rg || 
-              !formData.cpf || !formData.purpose || !formData.courseModality)
+              !formData.cpf || !formData.purpose)
             }
             className="request-button"
           >
@@ -475,7 +472,7 @@ function RequestCertificateContent() {
           
           {documentStatus && documentStatus.isApproved && (
             !formData.fullName || !formData.phoneNumber || !formData.rg || 
-            !formData.cpf || !formData.purpose || !formData.courseModality
+            !formData.cpf || !formData.purpose
           ) && (
             <p className="tip-message">
               Preencha todos os campos obrigatórios para continuar.

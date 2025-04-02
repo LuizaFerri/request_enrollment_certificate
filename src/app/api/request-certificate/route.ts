@@ -29,7 +29,6 @@ export async function POST(request: NextRequest) {
       rg,
       cpf,
       purpose,
-      courseModality,
       additionalNotes,
       course,
       turma,
@@ -39,6 +38,30 @@ export async function POST(request: NextRequest) {
     if (!studentId || !email || !turmaId) {
       return NextResponse.json(
         { error: "Dados incompletos para a solicitação" },
+        { status: 400 }
+      );
+    }
+
+    // Verificar se já existe uma solicitação pendente para esta turma
+    const existingRequest = await query(
+      `SELECT id, request_date 
+       FROM certificate_requests 
+       WHERE turma_id = $1 
+       AND student_id = $2 
+       AND status = 'pending'
+       ORDER BY request_date DESC
+       LIMIT 1`,
+      [turmaId, studentId]
+    );
+
+    if (existingRequest.rows.length > 0) {
+      const requestDate = new Date(
+        existingRequest.rows[0].request_date
+      ).toLocaleDateString("pt-BR");
+      return NextResponse.json(
+        {
+          error: `Você já possui uma solicitação em andamento para esta turma (solicitada em ${requestDate}). Por favor, aguarde o processamento ou entre em contato com a secretaria.`,
+        },
         { status: 400 }
       );
     }
@@ -76,8 +99,7 @@ export async function POST(request: NextRequest) {
          rg,
          cpf,
          purpose,
-         course_modality,
-         additional_notes,
+          additional_notes,
          request_date, 
          status
        )
@@ -92,7 +114,6 @@ export async function POST(request: NextRequest) {
         rg,
         cpf,
         purpose,
-        courseModality,
         additionalNotes || "",
       ]
     );
@@ -119,7 +140,6 @@ export async function POST(request: NextRequest) {
       rg,
       cpf,
       purpose,
-      courseModality,
       additionalNotes: additionalNotes || "",
       course,
       turma,
@@ -152,7 +172,6 @@ interface EmailData {
   rg: string;
   cpf: string;
   purpose: string;
-  courseModality: string;
   additionalNotes: string;
   course: string;
   turma: string;

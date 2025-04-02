@@ -55,7 +55,6 @@ export interface CertificateRequestData {
   rg: string;
   cpf: string;
   purpose: string;
-  courseModality: 'formacao' | 'especializacao';
   additionalNotes?: string;
   course: string;
   turma: string;
